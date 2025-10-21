@@ -32,6 +32,8 @@ public:
     bool exportUsersCSV(Library& library, const std::string& filename);
     bool importUsersCSV(Library& library, const std::string& filename);
     
+    bool TxtLog(const std::string& action, const std::string& userId, const std::string& isbn);
+
     // Utility methods
     bool fileExists(const string& filename);
     void createBackup();

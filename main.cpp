@@ -211,8 +211,15 @@ int main() {
                     if (!isValidUserId(userId)) cout << "ID utilisateur invalide.\n";
                 } while (!isValidUserId(userId));
 
-                if (library.checkOutBook(isbn, userId)) cout << "Livre emprunté avec succès !\n";
-                else cout << "Erreur : Impossible d'emprunter le livre. Vérifiez l'ISBN, l'ID utilisateur et la disponibilité du livre.\n";
+                {
+                    bool ok = library.checkOutBook(isbn, userId);
+                    if (ok) {
+                        cout << "Livre emprunté avec succès !\n";
+                        fileManager.TxtLog("CHECKOUT", userId, isbn);
+                    } else {
+                        cout << "Erreur : Impossible d'emprunter le livre. Vérifiez l'ISBN, l'ID utilisateur et la disponibilité du livre.\n";
+                    }
+                }
                 pauseForInput();
                 break;
             }
@@ -224,8 +231,19 @@ int main() {
                     if (!isValidISBN(isbn)) cout << "ISBN invalide.\n";
                 } while (!isValidISBN(isbn));
 
-                if (library.returnBook(isbn)) cout << "Livre retourné avec succès !\n";
-                else cout << "Erreur : Impossible de retourner le livre. Vérifiez l'ISBN et que le livre est bien emprunté.\n";
+                {
+                    string borrower;
+                    Book* b = library.findBookByISBN(isbn);
+                    if (b) borrower = b->getBorrowerName();
+
+                    bool ok = library.returnBook(isbn);
+                    if (ok) {
+                        cout << "Livre retourné avec succès !\n";
+                        fileManager.TxtLog("RETURN", borrower, isbn);
+                    } else {
+                        cout << "Erreur : Impossible de retourner le livre. Vérifiez l'ISBN et que le livre est bien emprunté.\n";
+                    }
+                }
                 pauseForInput();
                 break;
             }

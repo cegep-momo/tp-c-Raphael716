@@ -1,6 +1,8 @@
 #include <fstream>
 #include <iostream>
 #include <filesystem>
+#include <chrono>
+#include <iomanip>
 #include "filemanager.h"
 
 using namespace std;
@@ -237,5 +239,17 @@ bool FileManager::importUsersCSV(Library& library, const string& filename) {
     }
     file.close();
     cout << "Importé " << count << " utilisateur(s) depuis CSV.\n";
+    return true;
+}
+
+bool FileManager::TxtLog(const std::string& action, const std::string& userId, const std::string& isbn) {
+    std::ofstream ofs("activity.txt", std::ios::app);
+    if (!ofs.is_open()) return false;
+
+    auto now = std::chrono::system_clock::now();
+    std::time_t t = std::chrono::system_clock::to_time_t(now);
+    std::tm tm = *std::localtime(&t);
+    ofs << std::put_time(&tm, "%Y-%m-%d %H:%M:%S") << ";" << action << ";" << userId << ";" << isbn << "\n";
+    ofs.close();
     return true;
 }
