@@ -1,4 +1,5 @@
 #include "book.h"
+#include <sstream>
 
 // Constructeurs
 Book::Book() 
@@ -77,15 +78,31 @@ void Book::setBorrowerName(const string& iName)
     }
 }
 
-// Fonctions
-void Book::checkOut(const string& iBorrower) {
+// Méthodes
+void Book::checkOut(const string& iBorrower) 
+{
     if (!iBorrower.empty()) {
         borrowerName = iBorrower;
         isAvailable = false;
     }
 }
 
-void Book::returnBook() {
+void Book::returnBook() 
+{
     borrowerName = "";
     isAvailable = true;
 }
+
+string Book::toString() const 
+{
+    std::ostringstream oss;
+    oss << "Titre : " << title << "\n"
+        << "Auteur : " << author << "\n"
+        << "ISBN : " << isbn << "\n"
+        << "Disponible : " << (isAvailable ? "Oui" : "Non") << "\n";
+    if (!isAvailable) {
+        oss << "Emprunteur : " << borrowerName << "\n";
+    }
+    return oss.str();
+}
+
