@@ -4,6 +4,7 @@
 
 #include "library.h"
 #include "filemanager.h"
+#include "validators.h"
 
 using namespace std;
 
@@ -69,29 +70,44 @@ int main() {
         
         switch (choice) {
             case 1: { // Add Book
-                string title = getInput("Entrez le titre du livre : ");
-                string author = getInput("Entrez l'auteur du livre : ");
-                string isbn = getInput("Entrez l'ISBN du livre : ");
-                
-                if (library.findBookByISBN(isbn)) {
-                    cout << "Erreur : Un livre avec l'ISBN " << isbn << " existe déjà.\n";
-                } else {
-                    Book newBook(title, author, isbn);
-                    library.addBook(newBook);
-                    cout << "Livre ajouté avec succès !\n";
-                }
+                string title;
+                do {
+                    title = getInput("Entrez le titre du livre : ");
+                    if (!isNonEmptyTitle(title)) cout << "Titre invalide. Veuillez réessayer.\n";
+                } while (!isNonEmptyTitle(title));
+
+                string author;
+                do {
+                    author = getInput("Entrez l'auteur du livre : ");
+                    if (!isValidName(author)) cout << "Nom d'auteur invalide. Veuillez utiliser des lettres, espaces, - ou '.\n";
+                } while (!isValidName(author));
+
+                string isbn;
+                do {
+                    isbn = getInput("Entrez l'ISBN du livre : ");
+                    if (!isValidISBN(isbn)) cout << "ISBN invalide. Doit contenir 10 ou 13 chiffres (les tirets sont autorises).\n";
+                    else if (library.findBookByISBN(isbn)) {
+                        cout << "Erreur : Un livre avec l'ISBN " << isbn << " existe déjà.\n";
+                        isbn.clear();
+                    }
+                } while (!isValidISBN(isbn));
+
+                Book newBook(title, author, isbn);
+                library.addBook(newBook);
+                cout << "Livre ajouté avec succès !\n";
                 pauseForInput();
                 break;
             }
             
             case 2: { // Remove Book
-                string isbn = getInput("Entrez l'ISBN du livre à supprimer : ");
-                
-                if (library.removeBook(isbn)) {
-                    cout << "Livre supprimé avec succès !\n";
-                } else {
-                    cout << "Livre non trouvé.\n";
-                }
+                string isbn;
+                do {
+                    isbn = getInput("Entrez l'ISBN du livre à supprimer : ");
+                    if (!isValidISBN(isbn)) cout << "ISBN invalide.\n";
+                } while (!isValidISBN(isbn));
+
+                if (library.removeBook(isbn)) cout << "Livre supprimé avec succès !\n";
+                else cout << "Livre non trouvé.\n";
                 pauseForInput();
                 break;
             }
@@ -143,16 +159,25 @@ int main() {
                 break;
             
             case 7: { // Add User
-                string name = getInput("Entrez le nom de l'utilisateur : ");
-                string userId = getInput("Entrez l'ID de l'utilisateur : ");
-                
-                if (library.findUserById(userId)) {
-                    cout << "Erreur : Un utilisateur avec l'ID " << userId << " existe déjà.\n";
-                } else {
-                    User newUser(name, userId);
-                    library.addUser(newUser);
-                    cout << "Utilisateur ajouté avec succès !\n";
-                }
+                string name;
+                do {
+                    name = getInput("Entrez le nom de l'utilisateur : ");
+                    if (!isValidName(name)) cout << "Nom invalide.\n";
+                } while (!isValidName(name));
+
+                string userId;
+                do {
+                    userId = getInput("Entrez l'ID de l'utilisateur (ex: USR001) : ");
+                    if (!isValidUserId(userId)) cout << "ID invalide. Format attendu: USR suivi de chiffres.\n";
+                    else if (library.findUserById(userId)) {
+                        cout << "Erreur : Un utilisateur avec l'ID " << userId << " existe déjà.\n";
+                        userId.clear();
+                    }
+                } while (!isValidUserId(userId));
+
+                User newUser(name, userId);
+                library.addUser(newUser);
+                cout << "Utilisateur ajouté avec succès !\n";
                 pauseForInput();
                 break;
             }
@@ -163,26 +188,33 @@ int main() {
                 break;
             
             case 9: { // Check Out Book
-                string isbn = getInput("Entrez l'ISBN du livre à emprunter : ");
-                string userId = getInput("Entrez l'ID de l'utilisateur : ");
-                
-                if (library.checkOutBook(isbn, userId)) {
-                    cout << "Livre emprunté avec succès !\n";
-                } else {
-                    cout << "Erreur : Impossible d'emprunter le livre. Vérifiez l'ISBN, l'ID utilisateur et la disponibilité du livre.\n";
-                }
+                string isbn;
+                do {
+                    isbn = getInput("Entrez l'ISBN du livre à emprunter : ");
+                    if (!isValidISBN(isbn)) cout << "ISBN invalide.\n";
+                } while (!isValidISBN(isbn));
+
+                string userId;
+                do {
+                    userId = getInput("Entrez l'ID de l'utilisateur : ");
+                    if (!isValidUserId(userId)) cout << "ID utilisateur invalide.\n";
+                } while (!isValidUserId(userId));
+
+                if (library.checkOutBook(isbn, userId)) cout << "Livre emprunté avec succès !\n";
+                else cout << "Erreur : Impossible d'emprunter le livre. Vérifiez l'ISBN, l'ID utilisateur et la disponibilité du livre.\n";
                 pauseForInput();
                 break;
             }
             
             case 10: { // Return Book
-                string isbn = getInput("Entrez l'ISBN du livre à retourner : ");
-                
-                if (library.returnBook(isbn)) {
-                    cout << "Livre retourné avec succès !\n";
-                } else {
-                    cout << "Erreur : Impossible de retourner le livre. Vérifiez l'ISBN et que le livre est bien emprunté.\n";
-                }
+                string isbn;
+                do {
+                    isbn = getInput("Entrez l'ISBN du livre à retourner : ");
+                    if (!isValidISBN(isbn)) cout << "ISBN invalide.\n";
+                } while (!isValidISBN(isbn));
+
+                if (library.returnBook(isbn)) cout << "Livre retourné avec succès !\n";
+                else cout << "Erreur : Impossible de retourner le livre. Vérifiez l'ISBN et que le livre est bien emprunté.\n";
                 pauseForInput();
                 break;
             }
