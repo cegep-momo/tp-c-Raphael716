@@ -106,3 +106,28 @@ string Book::toString() const
     return oss.str();
 }
 
+std::string Book::toFileFormat() const 
+{
+    std::string result = title + "|" + author + "|" + isbn + "|";
+    result += (isAvailable ? "1" : "0");
+    result += "|";
+    result += borrowerName;
+    return result;
+}
+
+void Book::fromFileFormat(const std::string& iLine) 
+{
+    std::stringstream ss(iLine);
+    
+    std::getline(ss, title, '|');
+    std::getline(ss, author, '|');
+    std::getline(ss, isbn, '|');
+    
+    std::string availStr;
+    std::getline(ss, availStr, '|');
+    isAvailable = (availStr == "1" || availStr == "true");
+    
+    std::getline(ss, borrowerName, '|');
+    
+    if (isAvailable) borrowerName.clear();
+}

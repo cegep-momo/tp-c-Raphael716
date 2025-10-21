@@ -1,9 +1,0 @@
-{
-    "files.associations": {
-        "*.jsx": "javascriptreact",
-        "random": "cpp",
-        "array": "cpp",
-        "string_view": "cpp",
-        "ranges": "cpp"
-    }
-}
