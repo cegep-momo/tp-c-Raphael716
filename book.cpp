@@ -76,3 +76,16 @@ void Book::setBorrowerName(const string& iName)
         isAvailable = false;
     }
 }
+
+// Fonctions
+void Book::checkOut(const string& iBorrower) {
+    if (!iBorrower.empty()) {
+        borrowerName = iBorrower;
+        isAvailable = false;
+    }
+}
+
+void Book::returnBook() {
+    borrowerName = "";
+    isAvailable = true;
+}
