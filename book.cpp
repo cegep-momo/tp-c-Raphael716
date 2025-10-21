@@ -1,7 +1,8 @@
 #include "book.h"
 
 // Constructeurs
-Book::Book() {
+Book::Book() 
+{
     title = "";
     author = "";
     isbn = "";
@@ -9,7 +10,8 @@ Book::Book() {
     borrowerName = "";
 }
 
-Book::Book(const string& iTitle, const string& iAuthor, const string& iIsbn) {
+Book::Book(const string& iTitle, const string& iAuthor, const string& iIsbn) 
+{
     title = iTitle;
     author = iAuthor;
     isbn = iIsbn;
@@ -18,22 +20,59 @@ Book::Book(const string& iTitle, const string& iAuthor, const string& iIsbn) {
 }
 
 // Getters
-string Book::getTitle() const {
+string Book::getTitle() const 
+{
     return title;
 }
 
-string Book::getAuthor() const {
+string Book::getAuthor() const 
+{
     return author;
 }
 
-string Book::getISBN() const {
+string Book::getISBN() const 
+{
     return isbn;
 }
 
-bool Book::getAvailability() const {
+bool Book::getAvailability() const 
+{
     return isAvailable;
 }
 
-string Book::getBorrowerName() const {
+string Book::getBorrowerName() const 
+{
     return borrowerName;
+}
+
+// Setters
+void Book::setTitle(const string& iTitle) 
+{
+    title = iTitle;
+}
+
+void Book::setAuthor(const string& iAuthor) 
+{
+    author = iAuthor;
+}
+
+void Book::setISBN(const string& iIsbn) 
+{
+    isbn = iIsbn;
+}
+
+void Book::setAvailability(bool iAvailable) 
+{
+    isAvailable = iAvailable;
+    if (iAvailable) {
+        borrowerName = "";
+    }
+}
+
+void Book::setBorrowerName(const string& iName) 
+{
+    borrowerName = iName;
+    if (!iName.empty()) {
+        isAvailable = false;
+    }
 }
