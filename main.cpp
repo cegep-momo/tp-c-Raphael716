@@ -8,6 +8,13 @@
 
 using namespace std;
 
+static string trimString(const string& s) {
+    size_t start = s.find_first_not_of(" \t\r\n");
+    if (start == string::npos) return "";
+    size_t end = s.find_last_not_of(" \t\r\n");
+    return s.substr(start, end - start + 1);
+}
+
 void clearScreen() {
     system("cls || clear");
 }
@@ -33,6 +40,10 @@ void displayMenu() {
     cout << "11. Statistiques de la Bibliothèque\n";
     cout << "12. Sauvegarder les Données\n";
     cout << "13. Créer une Sauvegarde\n";
+    cout << "14. Exporter Livres en CSV\n";
+    cout << "15. Importer Livres depuis CSV\n";
+    cout << "16. Exporter Utilisateurs en CSV\n";
+    cout << "17. Importer Utilisateurs depuis CSV\n";
     cout << "0.  Quitter\n";
     cout << "======================================================\n";
     cout << "Entrez votre choix : ";
@@ -241,6 +252,66 @@ int main() {
             
             case 13: { // Create Backup
                 fileManager.createBackup();
+                pauseForInput();
+                break;
+            }
+
+            case 14: {
+                {
+                    string filename = trimString(getInput("Nom du fichier CSV pour export (ex: books_export.csv) : "));
+                    if (filename.empty()) {
+                        filename = "books_export.csv";
+                        cout << "Aucun nom fourni. Utilisation de : " << filename << "\n";
+                    }
+                    cout << "Ecriture dans le fichier : '" << filename << "'...\n";
+                    if (fileManager.exportBooksCSV(library, filename)) cout << "Export CSV livres réussi.\n";
+                    else cout << "Erreur lors de l'export CSV livres.\n";
+                }
+                pauseForInput();
+                break;
+            }
+
+            case 15: {
+                {
+                    string filename = trimString(getInput("Nom du fichier CSV à importer (ex: books_import.csv) : "));
+                    if (filename.empty()) {
+                        cout << "Aucun nom fourni. Annulation de l'import.\n";
+                    } else {
+                        cout << "Lecture depuis le fichier : '" << filename << "'...\n";
+                        if (fileManager.importBooksCSV(library, filename)) cout << "Import CSV livres terminé.\n";
+                        else cout << "Erreur lors de l'import CSV livres.\n";
+                    }
+                }
+                pauseForInput();
+                break;
+            }
+
+            case 16: {
+                {
+                    string filename = trimString(getInput("Nom du fichier CSV pour export utilisateurs (ex: users_export.csv) : "));
+                    if (filename.empty()) {
+                        filename = "users_export.csv";
+                        cout << "Aucun nom fourni. Utilisation de : " << filename << "\n";
+                    }
+                    cout << "Ecriture dans le fichier : '" << filename << "'...\n";
+                    if (fileManager.exportUsersCSV(library, filename)) cout << "Export CSV utilisateurs réussi.\n";
+                    else cout << "Erreur lors de l'export CSV utilisateurs.\n";
+                }
+                pauseForInput();
+                break;
+            }
+
+            case 17: {
+                {
+                    string filename = trimString(getInput("Nom du fichier CSV utilisateurs à importer (ex: users_import.csv) : "));
+                    if (filename.empty()) {
+                        cout << "Aucun nom fourni. Annulation de l'import.\n";
+                    } else {
+                        cout << "Lecture depuis le fichier : '" << filename << "'...\n";
+                        if (fileManager.importUsersCSV(library, filename)) cout << "Import CSV utilisateurs terminé.\n";
+                        else cout << "Erreur lors de l'import CSV utilisateurs.\n";
+                    }
+                }
                 pauseForInput();
                 break;
             }

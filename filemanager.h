@@ -26,6 +26,11 @@ public:
     bool saveUsersToFile(Library& library);
     bool loadBooksFromFile(Library& library);
     bool loadUsersFromFile(Library& library);
+ 
+    bool exportBooksCSV(Library& library, const std::string& filename);
+    bool importBooksCSV(Library& library, const std::string& filename);
+    bool exportUsersCSV(Library& library, const std::string& filename);
+    bool importUsersCSV(Library& library, const std::string& filename);
     
     // Utility methods
     bool fileExists(const string& filename);

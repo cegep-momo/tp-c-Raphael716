@@ -121,3 +121,121 @@ void FileManager::createBackup() {
     
     cout << "Fichiers de sauvegarde créés.\n";
 }
+
+bool FileManager::exportBooksCSV(Library& library, const string& filename) {
+    ofstream file(filename);
+    if (!file.is_open()) {
+        cout << "Erreur : impossible d'ouvrir " << filename << " en écriture.\n";
+        return false;
+    }
+    auto books = library.getAllBooks();
+    file << "Titre;Auteur;ISBN;Disponible;Emprunteur\n";
+    for (auto b : books) {
+        file << b->getTitle() << ";" << b->getAuthor() << ";" << b->getISBN() << ";" << (b->getAvailability() ? "1" : "0") << ";" << b->getBorrowerName() << "\n";
+    }
+    file.close();
+    return true;
+}
+
+bool FileManager::importBooksCSV(Library& library, const string& filename) {
+    ifstream file(filename);
+    if (!file.is_open()) {
+        cout << "Erreur : impossible d'ouvrir " << filename << " en lecture.\n";
+        return false;
+    }
+    string line;
+    bool first = true;
+    int count = 0;
+    while (getline(file, line)) {
+        if (first) { first = false; continue; }
+        if (line.empty()) continue;
+        // split by ;
+        vector<string> parts;
+        size_t pos = 0;
+        while (pos <= line.size()) {
+            size_t p = line.find(';', pos);
+            if (p == string::npos) p = line.size();
+            parts.push_back(line.substr(pos, p - pos));
+            pos = p + 1;
+        }
+        if (parts.size() < 3) continue;
+        string title = parts[0];
+        string author = parts[1];
+        string isbn = parts[2];
+        Book b(title, author, isbn);
+        if (parts.size() >= 4) {
+            if (parts[3] == "0") b.setAvailability(false);
+            else b.setAvailability(true);
+        }
+        if (parts.size() >= 5) b.setBorrowerName(parts[4]);
+        library.addBook(b);
+        count++;
+    }
+    file.close();
+    cout << "Importé " << count << " livre(s) depuis CSV.\n";
+    return true;
+}
+
+bool FileManager::exportUsersCSV(Library& library, const string& filename) {
+    ofstream file(filename);
+    if (!file.is_open()) {
+        cout << "Erreur : impossible d'ouvrir " << filename << " en écriture.\n";
+        return false;
+    }
+    auto users = library.getAllUsers();
+    file << "Nom;ID;Emprunts\n";
+    for (auto u : users) {
+        file << u->getName() << ";" << u->getUserId() << ";";
+        auto borrowed = u->getBorrowedBooks();
+        for (size_t i = 0; i < borrowed.size(); ++i) {
+            file << borrowed[i];
+            if (i + 1 < borrowed.size()) file << ",";
+        }
+        file << "\n";
+    }
+    file.close();
+    return true;
+}
+
+bool FileManager::importUsersCSV(Library& library, const string& filename) {
+    ifstream file(filename);
+    if (!file.is_open()) {
+        cout << "Erreur : impossible d'ouvrir " << filename << " en lecture.\n";
+        return false;
+    }
+    string line;
+    bool first = true;
+    int count = 0;
+    while (getline(file, line)) {
+        if (first) { first = false; continue; }
+        if (line.empty()) continue;
+        vector<string> parts;
+        size_t pos = 0;
+        while (pos <= line.size()) {
+            size_t p = line.find(';', pos);
+            if (p == string::npos) p = line.size();
+            parts.push_back(line.substr(pos, p - pos));
+            pos = p + 1;
+        }
+        if (parts.size() < 2) continue;
+        string name = parts[0];
+        string id = parts[1];
+        User u(name, id);
+        if (parts.size() >= 3 && !parts[2].empty()) {
+            size_t p = 0;
+            string s = parts[2];
+            while (p <= s.size()) {
+                size_t q = s.find(',', p);
+                if (q == string::npos) q = s.size();
+                string isbn = s.substr(p, q - p);
+                if (!isbn.empty()) u.borrowBook(isbn);
+                p = q + 1;
+            }
+        }
+        library.addUser(u);
+        count++;
+    }
+    file.close();
+    cout << "Importé " << count << " utilisateur(s) depuis CSV.\n";
+    return true;
+}
