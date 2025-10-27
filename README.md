@@ -1,3 +1,5 @@
+Travail par: Raphael Thomas
+
 ## Question 1 : C++
 
 Les fonctions labda (plus avancé que le cours)
